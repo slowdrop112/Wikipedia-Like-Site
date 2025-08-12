@@ -1,0 +1,71 @@
+@page
+@model ProiectPAW1.Pages.Moderation.PendingEditsModel
+@{
+    ViewData["Title"] = "Pending Article Edits";
+}
+
+<div class="container">
+    <h1 class="mb-4">
+        <i class="bi bi-clock-history"></i> Pending Article Edits
+    </h1>
+
+    @if (!Model.PendingEdits.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No pending edits to review.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var edit in Model.PendingEdits)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                <a asp-page="/Articles/Details" asp-route-id="@edit.ArticleId">@edit.Title</a>
+                            </h5>
+                            <span class="badge bg-warning">Pending</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-person"></i> Edited by @edit.Editor.UserName
+                                    <span class="mx-2">•</span>
+                                    <i class="bi bi-clock"></i> @edit.SubmittedAt.ToString("MMM dd, yyyy HH:mm")
+                                </small>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6>Changes Summary:</h6>
+                                <ul class="list-unstyled">
+                                    <li><strong>Domain:</strong> @edit.Domain</li>
+                                    <li><strong>Protected:</strong> @(edit.IsProtected ? "Yes" : "No")</li>
+                                    <li><strong>Chapters:</strong> @edit.GetChapterCount()</li>
+                                </ul>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <a asp-page="./ReviewEdit" asp-route-id="@edit.Id" class="btn btn-primary">
+                                    <i class="bi bi-eye"></i> Review Changes
+                                </a>
+                                <form method="post" class="d-inline">
+                                    <input type="hidden" name="editId" value="@edit.Id" />
+                                    <button type="submit" class="btn btn-success" asp-page-handler="Approve"
+                                            onclick="return confirm('Are you sure you want to approve these changes?')">
+                                        <i class="bi bi-check-lg"></i> Approve
+                                    </button>
+                                    <button type="submit" class="btn btn-danger" asp-page-handler="Reject"
+                                            onclick="return confirm('Are you sure you want to reject these changes?')">
+                                        <i class="bi bi-x-lg"></i> Reject
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div> 

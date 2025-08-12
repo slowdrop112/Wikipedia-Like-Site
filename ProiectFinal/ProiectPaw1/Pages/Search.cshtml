@@ -1,0 +1,89 @@
+@page
+@model ProiectPAW1.Pages.SearchModel
+@{
+    ViewData["Title"] = "Search Articles";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <h1>Search Articles</h1>
+            <form method="get" class="my-4">
+                <div class="input-group input-group-lg">
+                    <input type="search" name="SearchQuery" class="form-control"
+                           placeholder="Search articles..."
+                           value="@Model.SearchQuery"
+                           aria-label="Search articles">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+                <div class="mt-2">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="SearchInContent"
+                               value="true" id="searchInContent"
+                        @(Model.SearchInContent == true ? "checked" : "")>
+                        <label class="form-check-label" for="searchInContent">Search in content</label>
+                    </div>
+                    <select name="Domain" class="form-select form-select-sm d-inline-block w-auto ms-2">
+                        <option value="">All Domains</option>
+                        <option value="Art" selected="@(Model.Domain == "Art")">Art</option>
+                        <option value="History" selected="@(Model.Domain == "History")">History</option>
+                        <option value="Science" selected="@(Model.Domain == "Science")">Science</option>
+                        <option value="Geography" selected="@(Model.Domain == "Geography")">Geography</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.SearchQuery))
+    {
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                @if (Model.SearchResults.Any())
+                {
+                    <h2 class="h5 mb-4">Found @Model.SearchResults.Count results for "@Model.SearchQuery"</h2>
+                    @foreach (var result in Model.SearchResults)
+                    {
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h3 class="h5 card-title">
+                                    <a asp-page="/Articles/Details" asp-route-id="@result.Id"
+                                       class="text-decoration-none">@result.Title</a>
+                                    @if (result.IsProtected)
+                                    {
+                                        <i class="bi bi-lock-fill text-warning" title="Protected Article"></i>
+                                    }
+                                </h3>
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <span class="badge bg-secondary">@result.Domain</span>
+                                    by @result.Author?.UserName
+                                </h6>
+                                @if (!string.IsNullOrEmpty(result.MatchedContent))
+                                {
+                                    <p class="card-text">
+                                        <small class="text-muted">Matched in content:</small><br />
+                                        @Html.Raw(result.MatchedContent)
+                                    </p>
+                                }
+                                <div class="card-text">
+                                    <small class="text-muted">
+                                        Last updated @result.LastModifiedAt.ToString("MMM dd, yyyy")
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        No articles found matching your search criteria.
+                        Try different keywords or <a asp-page="/Articles/Create">create a new article</a>.
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

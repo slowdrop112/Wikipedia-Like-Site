@@ -1,0 +1,159 @@
+@page "{id:int}"
+@model ProiectPAW1.Pages.Articles.EditModel
+@{
+    ViewData["Title"] = $"Edit - {Model.Article.Title}";
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb" class="my-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-page="/Articles/Index">Articles</a></li>
+            <li class="breadcrumb-item"><a asp-page="./Details" asp-route-id="@Model.Article.Id">@Model.Article.Title</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+        </ol>
+    </nav>
+
+    <h1>Edit Article</h1>
+    <hr />
+
+    <form method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Article.Id" />
+        <input type="hidden" asp-for="Article.AuthorId" />
+        <input type="hidden" asp-for="Article.CreatedAt" />
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <label asp-for="Article.Title" class="form-label"></label>
+                    <input asp-for="Article.Title" class="form-control" />
+                    <span asp-validation-for="Article.Title" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Article.Domain" class="form-label"></label>
+                    <select asp-for="Article.Domain" class="form-select">
+                        <option value="">Select Domain</option>                    
+                        <option value="Art">Art</option>
+                        <option value="History">History</option>
+                        <option value="Science">Science</option>
+                        <option value="Geography">Geography</option>
+                        <option value="Sport">Sport</option>
+                        <option value="Politics">Politics</option>
+                        <option value="Religion">Religion</option>
+                    </select>
+                    <span asp-validation-for="Article.Domain" class="text-danger"></span>
+                </div>
+
+                <div id="chaptersContainer">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3>Chapters</h3>
+                        <button type="button" id="addChapter" class="btn btn-outline-primary">
+                            <i class="bi bi-plus-circle"></i> Add Chapter
+                        </button>
+                    </div>
+
+                    @for (var i = 0; i < Model.Article.Chapters.Count; i++)
+                    {
+                        <div class="chapter-item card mb-4">
+                            <div class="card-body">
+                                <input type="hidden" asp-for="Article.Chapters[i].Id" />
+                                <input type="hidden" asp-for="Article.Chapters[i].ArticleId" />
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Chapter Title</label>
+                                    <input asp-for="Article.Chapters[i].Title" class="form-control" />
+                                    <span asp-validation-for="Article.Chapters[i].Title" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Chapter Content</label>
+                                    <textarea asp-for="Article.Chapters[i].Content" class="form-control" rows="5"></textarea>
+                                    <span asp-validation-for="Article.Chapters[i].Content" class="text-danger"></span>
+                                </div>
+
+                                <input type="hidden" asp-for="Article.Chapters[i].OrderIndex" value="@i" />
+                                
+                                <button type="button" class="btn btn-danger btn-sm remove-chapter">
+                                    <i class="bi bi-trash"></i> Remove Chapter
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Article Settings</h5>
+                        
+                        <div class="mb-3 form-check">
+                            <input asp-for="Article.IsProtected" class="form-check-input" />
+                            <label asp-for="Article.IsProtected" class="form-check-label">Protect Article</label>
+                            <div class="form-text">Only registered users can edit protected articles.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Featured Image</label>
+                            @if (Model.Article.Images.Any())
+                            {
+                                <img src="@Model.Article.Images.First().ImagePath" 
+                                     class="img-fluid rounded mb-2" alt="Current featured image" />
+                            }
+                            <input type="file" name="NewFeaturedImage" class="form-control" accept="image/*" />
+                            <div class="form-text">Upload a new image to replace the current one.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Edit Summary</label>
+                            <textarea asp-for="EditSummary" class="form-control" rows="2" 
+                                    placeholder="Briefly describe your changes"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-save"></i> Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            let chapterIndex = @Model.Article.Chapters.Count;
+
+            $('#addChapter').click(function () {
+                const template = `
+                    <div class="chapter-item card mb-4">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Chapter Title</label>
+                                <input name="Article.Chapters[${chapterIndex}].Title" class="form-control" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Chapter Content</label>
+                                <textarea name="Article.Chapters[${chapterIndex}].Content" class="form-control" rows="5"></textarea>
+                            </div>
+                            <input type="hidden" name="Article.Chapters[${chapterIndex}].OrderIndex" value="${chapterIndex}" />
+                            <button type="button" class="btn btn-danger btn-sm remove-chapter">
+                                <i class="bi bi-trash"></i> Remove Chapter
+                            </button>
+                        </div>
+                    </div>
+                `;
+                $('#chaptersContainer').append(template);
+                chapterIndex++;
+            });
+
+            $(document).on('click', '.remove-chapter', function () {
+                $(this).closest('.chapter-item').remove();
+            });
+        });
+    </script>
+} 

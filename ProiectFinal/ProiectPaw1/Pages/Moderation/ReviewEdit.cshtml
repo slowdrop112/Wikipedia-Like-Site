@@ -1,0 +1,47 @@
+﻿@page "{id:int}"
+@model ProiectPAW1.Pages.Moderation.ReviewEditModel
+@{
+    ViewData["Title"] = "Review Article Edit";
+}
+
+<h1>Review Article Edit</h1>
+
+@if (Model.PendingEdit == null)
+{
+    <div class="alert alert-danger">Pending edit not found.</div>
+}
+else
+{
+    <h3>Article: @Model.PendingEdit.Article.Title</h3>
+    <p><strong>Edited by:</strong> @Model.PendingEdit.Editor.UserName</p>
+    <p><strong>Submitted at:</strong> @Model.PendingEdit.SubmittedAt.ToString("g")</p>
+
+    <h4>Title</h4>
+    <p>@Model.PendingEdit.Title</p>
+
+    <h4>Domain</h4>
+    <p>@Model.PendingEdit.Domain</p>
+
+    <h4>Is Protected</h4>
+    <p>@(Model.PendingEdit.IsProtected ? "Yes" : "No")</p>
+
+    <h4>Chapters</h4>
+    @if (Model.NewChapters != null && Model.NewChapters.Count > 0)
+    {
+        <ul>
+            @foreach (var chapter in Model.NewChapters)
+            {
+                <li>
+                    <h5>@chapter.Title</h5>
+                    <p>@chapter.Content</p>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No chapters submitted.</p>
+    }
+
+    <a asp-page="/Moderation/PendingEdits" class="btn btn-secondary">Back to Pending Edits</a>
+}

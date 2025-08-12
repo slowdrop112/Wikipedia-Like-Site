@@ -1,0 +1,90 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center mb-5">
+    <h1 class="display-4">Welcome to Encyclopedia</h1>
+    <p class="lead">Explore and contribute to our growing knowledge base.</p>
+    @if (!User.Identity?.IsAuthenticated ?? true)
+    {
+        <p>
+            <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            <a class="btn btn-outline-primary" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </p>
+    }
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <h2 class="mb-4">Recent Articles</h2>
+        @foreach (var article in Model.RecentArticles)
+        {
+            <div class="card mb-3">
+                <div class="row g-0">
+                    @if (article.Images.Any())
+                    {
+                        <div class="col-md-4">
+                            <img src="@article.Images.First().ImagePath"
+                                 class="img-fluid rounded-start article-image"
+                                 alt="@article.Images.First().AltText">
+                        </div>
+                    }
+                    <div class="@(article.Images.Any() ? "col-md-8" : "col-md-12")">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a asp-page="/Articles/Details" asp-route-id="@article.Id" class="text-decoration-none">
+                                    @article.Title
+                                </a>
+                                @if (article.IsProtected)
+                                {
+                                    <i class="bi bi-lock-fill text-warning" title="Protected Article"></i>
+                                }
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <span class="badge bg-secondary">@article.Domain</span>
+                                by @article.Author?.UserName
+                            </h6>
+                            @if (article.Chapters.Any())
+                            {
+                                var firstChapter = article.Chapters.OrderBy(c => c.OrderIndex).First();
+                                <p class="card-text">
+                                    @(firstChapter.Content.Length > 200
+                                        ? firstChapter.Content.Substring(0, 200) + "..."
+                                        : firstChapter.Content)
+                                </p>
+                            }
+                            else
+                            {
+                                <p class="card-text text-muted">No content available</p>
+                            }
+                            <div class="card-text">
+                                <small class="text-muted">
+                                    Created @article.CreatedAt.ToString("MMM dd, yyyy")
+                                    @if (article.LastModifiedAt != article.CreatedAt)
+                                    {
+                                        <span>• Updated @article.LastModifiedAt.ToString("MMM dd, yyyy")</span>
+                                    }
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col-md-4">
+        <h2 class="mb-4">Browse by Domain</h2>
+        <div class="list-group">
+            @foreach (var domain in Model.Domains)
+            {
+                <a href="/Articles/ByDomain?domain=@domain.Name"
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    @domain.Name
+                    <span class="badge bg-primary rounded-pill">@domain.ArticleCount</span>
+                </a>
+            }
+        </div>
+    </div>
+</div>
