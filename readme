@@ -1,1 +1,52 @@
-readme
+# 📚 Wikipedia-Like Website
+
+> A modern take on a Wikipedia-style platform — with extra features I believe every site like this should have.
+
+![Made with Razor Pages](https://img.shields.io/badge/Made%20with-Razor%20Pages-blue?style=for-the-badge)
+![Languages](https://img.shields.io/badge/Languages-HTML%2C%20CSS%2C%20C%23%2C%20JS%2C%20SQL-orange?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
+---
+
+## 🖥 Tech Stack
+- **HTML** — structure  
+- **CSS** — styling  
+- **C#** — backend logic  
+- **JavaScript** — interactivity  
+- **SQL Database** — data storage  
+
+---
+
+## 🚀 Features
+- **Account Management System** with multiple roles:
+  1. **Guest** 👤  
+     - Publish, delete, and edit their own articles.
+  2. **Normal User** 📝  
+     - All guest privileges **plus**: comment, like, and dislike features.
+  3. **Moderator** 🛡  
+     - All normal user privileges **plus**: edit and delete *others’* articles.
+  4. **Admin** 👑  
+     - All moderator privileges **plus**:
+       - Dedicated statistics page showing:
+         - Number of articles published per user
+         - All edit history
+       - Ability to change user roles  
+       - Admin is pre-defined in the database and can manage all accounts.
+
+---
+
+## ⚙️ Built With
+- **ASP.NET Core Razor Pages**
+- **Responsive design**
+- **Role-based authorization**
+- **SQL relational database**
+
+---
+
+
+## 📜 License
+This project was created by Grigore Cristian in 2025.  
+You may view and learn from the code, but redistribution or commercial use is prohibited without permission.
+
+
+---
